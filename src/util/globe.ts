@@ -48,11 +48,10 @@ export function turnGlobe(
   globeRef.current.pointOfView(coords, 250);
 }
 
-export const globeImg = (nightMode: boolean) => {
-  const time = nightMode ? "night" : "day";
+export const globeImg = () => {
   if (isSafari && browserVersion < "14") {
-    return `images/safari-14-earth-${time}.jpg`;
+    return `images/safari-14-earth-day.jpg`;
   } else {
-    return `images/earth-${time}.webp`;
+    return `images/earth-day.webp`;
   }
 };

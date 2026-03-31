@@ -1,13 +1,8 @@
-import { FormEvent, useContext, useState, useRef, useEffect } from "react";
+import { FormEvent, useState, useRef, useEffect } from "react";
 import { Country } from "../lib/country";
 import { answerCountry, answerName } from "../util/answer";
 import { Message } from "./Message";
 import { polygonDistance } from "../util/distance";
-// import alternateNames from "../data/alternate_names.json";
-import { LocaleContext } from "../i18n/LocaleContext";
-import localeList from "../i18n/messages";
-import { FormattedMessage } from "react-intl";
-import { langNameMap } from "../i18n/locales";
 import { AltNames } from "../lib/alternateNames";
 const countryData: Country[] = require("../data/country_data.json").features;
 const alternateNames: AltNames = require("../data/alternate_names.json");
@@ -29,9 +24,6 @@ export default function Guesser({
 }: Props) {
   const [guessName, setGuessName] = useState("");
   const [error, setError] = useState("");
-  const { locale } = useContext(LocaleContext);
-
-  const langName = langNameMap[locale];
 
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -52,12 +44,11 @@ export default function Guesser({
         NAME.replace(/-/g, " ").toLowerCase() === countryName ||
         BRK_NAME.toLowerCase() === countryName ||
         NAME_SORT.toLowerCase() === countryName ||
-        country.properties[langName].toLowerCase() === countryName
+        country.properties["NAME_EN"].toLowerCase() === countryName
       );
     });
   }
 
-  // Check territories function
   function runChecks() {
     const trimmedName = guessName
       .trim()
@@ -65,19 +56,19 @@ export default function Guesser({
       .replace(/&/g, "and")
       .replace(/^st\s/g, "st. ");
 
-    const oldNamePair = alternateNames[locale].find((pair) => {
+    const oldNamePair = alternateNames["en-CA"].find((pair) => {
       return pair.alternative === trimmedName;
     });
     const userGuess = oldNamePair ? oldNamePair.real : trimmedName;
     const alreadyGuessed = findCountry(userGuess, guesses);
     if (alreadyGuessed) {
-      setError(localeList[locale]["Game6"]);
+      setError("Country already guessed");
       ref.current?.select();
       return;
     }
     const guessCountry = findCountry(userGuess, countryData);
     if (!guessCountry) {
-      setError(localeList[locale]["Game5"]);
+      setError("Invalid guess");
       ref.current?.select();
       return;
     }
@@ -128,11 +119,11 @@ export default function Guesser({
       >
         <input
           className="shadow px-2 py-1 md:py-0
-          text-gray-700 dark:bg-slate-200 dark:text-gray-900
-          focus:outline-none 
-          focus:shadow-outline disabled:bg-slate-400
-          border rounded disabled:border-slate-400
-          w-full"
+          text-bnb-text bg-white
+          focus:outline-none
+          focus:shadow-outline disabled:bg-gray-200
+          border border-bnb-border-input rounded disabled:border-gray-300
+          w-full focus:border-bnb-text"
           type="text"
           name="guesser"
           id="guesser"
@@ -140,17 +131,17 @@ export default function Guesser({
           onChange={(e) => setGuessName(e.currentTarget.value)}
           ref={ref}
           disabled={win}
-          placeholder={guesses.length === 0 ? localeList[locale]["Game1"] : ""}
+          placeholder={guesses.length === 0 ? "Enter country name here" : ""}
           autoComplete="new-password"
         />
         <button
-          className="bg-blue-700 dark:bg-purple-800 hover:bg-blue-900 
-          dark:hover:bg-purple-900 disabled:bg-blue-900  text-white 
-          font-bold py-1 md:py-2 px-4 rounded focus:shadow-outline "
+          className="bg-bnb-action hover:bg-bnb-action-hover
+          disabled:bg-bnb-action-disabled text-white
+          font-bold py-1 md:py-2 px-4 rounded focus:shadow-outline"
           type="submit"
           disabled={win}
         >
-          <FormattedMessage id="Game2" />
+          Enter
         </button>
       </form>
       <Message

@@ -1,9 +1,8 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactGlobe, { GlobeMethods } from "react-globe.gl";
 import { Country } from "../lib/country";
 import { answerCountry } from "../util/answer";
 import { findCentre, globeImg, turnGlobe } from "../util/globe";
-import { ThemeContext } from "../context/ThemeContext";
 import { getColour } from "../util/colour";
 import { isMobile } from "react-device-detect";
 const territoryData: Country[] = require("../data/territories.json").features;
@@ -19,9 +18,6 @@ const ZOOM_SPEED = 1;
 export default function Globe({ guesses, globeRef, practiceMode }: Props) {
   // State
   const [places, setPlaces] = useState(guesses);
-
-  // Theme
-  const { nightMode, prideMode, highContrast } = useContext(ThemeContext).theme;
 
   // Globe size settings
   const size = isMobile ? 320 : 600; // px on one side
@@ -80,41 +76,23 @@ export default function Globe({ guesses, globeRef, practiceMode }: Props) {
       const answerCountry = JSON.parse(
         localStorage.getItem("practice") as string
       );
-      return getColour(
-        country,
-        answerCountry,
-        nightMode,
-        highContrast,
-        prideMode
-      );
+      return getColour(country, answerCountry);
     }
-    return getColour(
-      country,
-      answerCountry,
-      nightMode,
-      highContrast,
-      prideMode
-    );
+    return getColour(country, answerCountry);
   }
 
   // Label colour
   function getLabel(country: Country) {
     const name = country.properties.ADMIN;
     const prox = country.proximity;
-    const dayColour = prox < 750_000 ? "gray-300" : "gray-900";
-    const nightColour = "gray-300";
-    const label = `<b class="text-${dayColour} dark:text-${nightColour}">${name}</b>`;
+    const colour = prox < 750_000 ? "gray-300" : "gray-900";
+    const label = `<b class="text-${colour}">${name}</b>`;
     return label;
   }
 
   // Polygon altitude
-  function getAltitude(country: Country) {
-    if (!highContrast || country.properties.TYPE === "Territory") return 0.01;
-    const prox = country.proximity;
-    let proxFraction = prox / 2_000_000;
-    proxFraction = Math.min(Math.max(proxFraction, 0.01), 0.95);
-    let alt = (1 - proxFraction) / 10;
-    return alt;
+  function getAltitude() {
+    return 0.01;
   }
 
   // Clicking the zoom buttons on mobile
@@ -132,21 +110,11 @@ export default function Globe({ guesses, globeRef, practiceMode }: Props) {
     overrideGlobeZooming();
   }
 
-  // Override the zoomSpeed mutation in globe.gl by calling this in the globe's
-  // onZoom callback.
-  //
-  // By the time this callback is called, an onchange event handler on
-  // `controls` defined in globe.gl's `globe.js` source file will have changed
-  // the zoomSpeed based on altitude. We will counteract that to get back the
-  // nice zooming implemented in the three.js library (`OrbitControls.js`).
+  // Override the zoomSpeed mutation in globe.gl
   function overrideGlobeZooming() {
     const controls: any = globeRef.current?.controls();
     if (controls != null) controls.zoomSpeed = ZOOM_SPEED;
   }
-
-  const btnFill = nightMode ? "bg-[#582679]" : "bg-[#F3BC63]";
-  const btnBorder = nightMode ? "border-[#350a46]" : "border-[#FF8E57]";
-  const btnText = nightMode ? "text-white font-bold" : "";
 
   return (
     <div>
@@ -159,7 +127,7 @@ export default function Globe({ guesses, globeRef, practiceMode }: Props) {
           className="select-none decoration-transparent cursor-grab "
           style={{ "-webkit-tap-highlight-color": "transparent" }}
           ref={globeRef}
-          globeImageUrl={globeImg(nightMode)}
+          globeImageUrl={globeImg()}
           width={size}
           height={size}
           backgroundColor="#00000000"
@@ -174,20 +142,20 @@ export default function Globe({ guesses, globeRef, practiceMode }: Props) {
           onGlobeClick={(d) => turnGlobe(d, globeRef)}
           onPolygonClick={(p, e, c) => turnGlobe(c, globeRef)}
           polygonStrokeColor="#00000000"
-          atmosphereColor={nightMode ? "rgba(63, 201, 255)" : "lightskyblue"}
+          atmosphereColor="lightskyblue"
           onZoom={globeOnZoom}
         />
       </div>
       {isMobile && (
         <div className="w-full flex justify-between text-md ">
           <button
-            className={`border-[1px] rounded-md select-none ${btnText} ${btnFill} px-4 ${btnBorder}`}
+            className="border-[1px] rounded-md select-none bg-bnb-brand px-4 border-bnb-text"
             onTouchStart={() => zoom(0.2)}
           >
             -
           </button>
           <button
-            className={`border-[1px] rounded-md select-none ${btnText} ${btnFill} px-4 ${btnBorder}`}
+            className="border-[1px] rounded-md select-none bg-bnb-brand px-4 border-bnb-text"
             onTouchStart={() => zoom(-0.2)}
           >
             +

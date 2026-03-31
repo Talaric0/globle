@@ -2,11 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
-@import url("https://fonts.googleapis.com/css?family=Amaranth&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap");
 
 html {
   height: 100%;
+  font-family: "IBM Plex Sans Condensed", sans-serif;
+  color: var(--color-text-primary);
 }
 
 body {

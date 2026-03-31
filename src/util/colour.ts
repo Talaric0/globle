@@ -1,10 +1,5 @@
 import { scaleSequentialSqrt } from "d3-scale";
-import {
-  interpolateBuPu,
-  interpolateOrRd,
-  interpolateGreys,
-  interpolateTurbo,
-} from "d3-scale-chromatic";
+import { interpolateOrRd } from "d3-scale-chromatic";
 import { Country } from "../lib/country";
 import { polygonDistance } from "./distance";
 
@@ -16,29 +11,18 @@ const YELLOW_SQUARE = "🟨";
 
 const MAX_DISTANCE = 15_000_000;
 
-export const getColour = (
-  guess: Country,
-  answer: Country,
-  nightMode: boolean,
-  highContrast: boolean,
-  prideMode: boolean
-) => {
+export const getColour = (guess: Country, answer: Country) => {
   if (guess.properties?.TYPE === "Territory") {
-    if (highContrast) return "white";
     return "#BBBBBB";
   }
   if (guess.properties.NAME === answer.properties.NAME) return "green";
   if (guess.proximity == null) {
     guess["proximity"] = polygonDistance(guess, answer);
   }
-  const gradient = highContrast
-    ? interpolateGreys
-    : prideMode
-    ? interpolateTurbo
-    : nightMode
-    ? interpolateBuPu
-    : interpolateOrRd;
-  const colorScale = scaleSequentialSqrt(gradient).domain([MAX_DISTANCE, 0]);
+  const colorScale = scaleSequentialSqrt(interpolateOrRd).domain([
+    MAX_DISTANCE,
+    0,
+  ]);
   const colour = colorScale(guess.proximity);
   return colour;
 };

@@ -8,7 +8,6 @@ import { dateDiffInDays, today } from "../util/dates";
 import { polygonDistance } from "../util/distance";
 import { getColourEmoji } from "../util/colour";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FormattedMessage } from "react-intl";
 
 const Globe = lazy(() => import("../components/Globe"));
 const Guesser = lazy(() => import("../components/Guesser"));
@@ -21,7 +20,6 @@ type Props = {
 };
 
 export default function Game({ reSpin, setShowStats }: Props) {
-  // Get data from local storage
   const [storedGuesses, storeGuesses] = useLocalStorage<Guesses>("guesses", {
     day: today,
     countries: [],
@@ -40,7 +38,6 @@ export default function Game({ reSpin, setShowStats }: Props) {
     firstStats
   );
 
-  // Set up practice mode
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const practiceMode = !!params.get("practice_mode");
@@ -73,20 +70,16 @@ export default function Game({ reSpin, setShowStats }: Props) {
     // eslint-disable-next-line
   }, [practiceMode]);
 
-  // Check if win condition already met
   const alreadyWon = practiceMode
     ? false
     : storedCountries?.map((c) => c.properties.NAME).includes(answerName);
 
-  // Now we're ready to start the game! Set up the game states with the data we
-  // already know from the stored info.
   const [guesses, setGuesses] = useState<Country[]>(
     practiceMode ? [] : storedCountries
   );
   const [win, setWin] = useState(alreadyWon);
   const globeRef = useRef<GlobeMethods>(null!);
 
-  // Whenever there's a new guess
   useEffect(() => {
     if (!practiceMode) {
       const guessNames = guesses.map((country) => country.properties.NAME);
@@ -97,10 +90,8 @@ export default function Game({ reSpin, setShowStats }: Props) {
     }
   }, [guesses, storeGuesses, practiceMode]);
 
-  // When the player wins!
   useEffect(() => {
     if (win && storedStats.lastWin !== today && !practiceMode) {
-      // Store new stats in local storage
       const lastWin = today;
       const gamesWon = storedStats.gamesWon + 1;
       const streakBroken = dateDiffInDays(storedStats.lastWin, lastWin) > 1;
@@ -131,22 +122,12 @@ export default function Game({ reSpin, setShowStats }: Props) {
       };
       storeStats(newStats);
 
-      // Show stats
       setTimeout(() => setShowStats(true), 3000);
     }
   }, [win, guesses, setShowStats, storeStats, storedStats, practiceMode]);
 
-  // Practice mode
-
-  // Fallback while loading
-  const renderLoader = () => (
-    <p className="dark:text-gray-200">
-      <FormattedMessage id="Loading" />
-    </p>
-  );
-
   return (
-    <Suspense fallback={renderLoader()}>
+    <Suspense fallback={<p className="text-bnb-text">Loading...</p>}>
       <Guesser
         guesses={guesses}
         setGuesses={setGuesses}
@@ -169,27 +150,24 @@ export default function Game({ reSpin, setShowStats }: Props) {
           />
           {practiceMode && (
             <div className="my-4 flex flex-wrap gap-3 items-center">
-              <span className="dark:text-gray-200">
-                <FormattedMessage id="PracticeMode" />
+              <span className="text-bnb-text">
+                You are in practice mode.
               </span>
               <button
-                className="text-white bg-blue-700 hover:bg-blue-800
-        focus:ring-4 focus:ring-blue-300 rounded-lg text-sm
-        px-4 py-2.5 text-center items-center
-        dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="text-white bg-bnb-action hover:bg-bnb-action-hover
+        focus:ring-4 focus:ring-bnb-action-inverse rounded-lg text-sm
+        px-4 py-2.5 text-center items-center"
                 onClick={() => navigate("/")}
               >
-                {" "}
-                <FormattedMessage id="PracticeExit" />
+                Exit practice mode
               </button>
               <button
-                className="text-white bg-blue-700 hover:bg-blue-800
-        focus:ring-4 focus:ring-blue-300 rounded-lg text-sm
-        px-4 py-2.5 text-center items-center
-        dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="text-white bg-bnb-action hover:bg-bnb-action-hover
+        focus:ring-4 focus:ring-bnb-action-inverse rounded-lg text-sm
+        px-4 py-2.5 text-center items-center"
                 onClick={enterPracticeMode}
               >
-                <FormattedMessage id="PracticeNew" />
+                New practice game
               </button>
             </div>
           )}
