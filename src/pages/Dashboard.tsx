@@ -299,16 +299,16 @@ export default function Dashboard() {
       .sort((a, b) => b.avg - a.avg);
   }, [filteredResults]);
 
-  // Map data: all results grouped by country
+  // Map data: year-filtered results grouped by country
   const countryMapData = useMemo(() => {
     const map: Record<string, { totalGuesses: number; count: number }> = {};
-    results.forEach((r) => {
+    filteredResults.forEach((r) => {
       if (!map[r.country]) map[r.country] = { totalGuesses: 0, count: 0 };
       map[r.country].totalGuesses += r.num_guesses;
       map[r.country].count += 1;
     });
     return map;
-  }, [results]);
+  }, [filteredResults]);
 
   const getCountryColor = useCallback(
     (geoName: string): string => {
@@ -392,12 +392,22 @@ export default function Dashboard() {
       return;
     }
 
-    setImportProgress({ current: 0, total: rows.length });
+    // Deduplicate by date — keep last occurrence
+    const byDate = new Map<string, GameResult>();
+    rows.forEach((r) => byDate.set(r.date, r));
+    const dedupedRows = Array.from(byDate.values());
+    if (dedupedRows.length < rows.length) {
+      errors.push(
+        `${rows.length - dedupedRows.length} duplicate date(s) found — keeping last entry for each`
+      );
+    }
+
+    setImportProgress({ current: 0, total: dedupedRows.length });
 
     const BATCH_SIZE = 100;
     let imported = 0;
-    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-      const batch = rows.slice(i, i + BATCH_SIZE);
+    for (let i = 0; i < dedupedRows.length; i += BATCH_SIZE) {
+      const batch = dedupedRows.slice(i, i + BATCH_SIZE);
       const { error: upsertError } = await supabase
         .from("game_results")
         .upsert(batch, { onConflict: "date" });
@@ -408,11 +418,11 @@ export default function Dashboard() {
       } else {
         imported += batch.length;
       }
-      setImportProgress({ current: imported, total: rows.length });
+      setImportProgress({ current: imported, total: dedupedRows.length });
     }
 
     setImportErrors(errors);
-    setImportSuccess(`Imported ${imported} of ${rows.length} rows.`);
+    setImportSuccess(`Imported ${imported} of ${dedupedRows.length} rows.`);
     setImportProgress(null);
 
     const { data } = await supabase

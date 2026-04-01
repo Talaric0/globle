@@ -3,7 +3,7 @@ import { supabase, GameResult } from "../lib/supabase";
 import { today } from "../util/dates";
 import { answerCountry, answerName } from "../util/answer";
 
-const TEAM_MEMBERS = ["Hallam", "Win", "James", "Nay", "MJ", "Alonso", "Bruno"];
+const TEAM_MEMBERS = ["Hallam", "Win", "James", "Nay", "MJ", "Alonso", "Bruno", "Rebeca"];
 
 type Props = {
   guessCount: number;
