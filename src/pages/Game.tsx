@@ -11,6 +11,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Globe = lazy(() => import("../components/Globe"));
 const Guesser = lazy(() => import("../components/Guesser"));
+const GuesserPicker = lazy(() => import("../components/GuesserPicker"));
 const List = lazy(() => import("../components/List"));
 const countryData: Country[] = require("../data/country_data.json").features;
 
@@ -135,6 +136,7 @@ export default function Game({ reSpin, setShowStats }: Props) {
         setWin={setWin}
         practiceMode={practiceMode}
       />
+      {win && !practiceMode && <GuesserPicker guessCount={guesses.length} />}
       {!reSpin && (
         <div className="pb-4 mb-5">
           <Globe

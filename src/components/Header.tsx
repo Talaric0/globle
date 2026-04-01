@@ -36,6 +36,16 @@ export default function Header({ setReSpin, setShowStats }: Props) {
               <path fill={svgColour} d={getPath("stats")}></path>
             </svg>
           </button>
+          <button onClick={() => navigate("/dashboard")} aria-label="Dashboard">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+            >
+              <path fill={svgColour} d={getPath("dashboard")}></path>
+            </svg>
+          </button>
           <button onClick={() => navigate("/settings")} aria-label="Settings">
             <svg
               xmlns="http://www.w3.org/2000/svg"

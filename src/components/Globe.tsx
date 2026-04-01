@@ -13,7 +13,7 @@ type Props = {
   practiceMode: boolean;
 };
 
-const ZOOM_SPEED = 1;
+const ZOOM_SPEED = 0.2;
 
 export default function Globe({ guesses, globeRef, practiceMode }: Props) {
   // State

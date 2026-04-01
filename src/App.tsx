@@ -1,18 +1,37 @@
-import { useEffect, useState } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Game from "./pages/Game";
 import Header from "./components/Header";
-import Settings from "./pages/Settings";
 import Statistics from "./components/Statistics";
 import Fade from "./transitions/Fade";
+import Settings from "./pages/Settings";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 function App() {
   const [reSpin, setReSpin] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const location = useLocation();
+  const isDashboard = location.pathname === "/dashboard";
 
   useEffect(() => {
     if (reSpin) setTimeout(() => setReSpin(false), 1);
   }, [reSpin]);
+
+  if (isDashboard) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 z-20 relative">
+        <Header setReSpin={setReSpin} setShowStats={setShowStats} />
+        <Suspense
+          fallback={<p className="text-bnb-text py-20">Loading...</p>}
+        >
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </Suspense>
+      </div>
+    );
+  }
 
   return (
     <div
