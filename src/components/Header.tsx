@@ -3,10 +3,9 @@ import { getPath } from "../util/svg";
 
 type Props = {
   setReSpin: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowStats: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function Header({ setReSpin, setShowStats }: Props) {
+export default function Header({ setReSpin }: Props) {
   const navigate = useNavigate();
 
   function reRenderGlobe() {
@@ -26,16 +25,6 @@ export default function Header({ setReSpin, setShowStats }: Props) {
           <h1 className="text-4xl font-extrabold font-heading">GLOBLE</h1>
         </button>
         <div className="space-x-1 flex absolute right-0 bottom-1">
-          <button onClick={() => setShowStats(true)} aria-label="Statistics">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-            >
-              <path fill={svgColour} d={getPath("stats")}></path>
-            </svg>
-          </button>
           <button onClick={() => navigate("/dashboard")} aria-label="Dashboard">
             <svg
               xmlns="http://www.w3.org/2000/svg"
