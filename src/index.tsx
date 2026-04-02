@@ -2,39 +2,32 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { DEFAULT_THEME_OPTIONS } from "@butternutbox/pawprint-tokens";
 import BodyStyle from "./components/BodyStyle";
 import { BrowserRouter } from "react-router-dom";
 
-const theme = createTheme(DEFAULT_THEME_OPTIONS as any);
+const theme = createTheme();
 
-// Inject semantic colour tokens as CSS custom properties so Tailwind and
-// components can reference them.  When pawprint-tokens is updated the
-// values flow through automatically.
-const semantics = (DEFAULT_THEME_OPTIONS as any).tokens.semantics.colour;
 const cssVars: Record<string, string> = {
-  "--color-bg-surface": semantics.background.surface.default,
-  "--color-bg-surface-secondary": semantics.background.surface.secondary,
-  "--color-bg-container-brand": semantics.background.container.brand,
-  "--color-bg-action-primary": semantics.background.action.primary.default,
-  "--color-bg-action-primary-hover": semantics.background.action.primary.hover,
-  "--color-bg-action-primary-disabled":
-    semantics.background.action.primary.disabled,
-  "--color-bg-action-secondary-selected":
-    semantics.background.action.secondary.selected,
-  "--color-text-primary": semantics.text.primary,
-  "--color-text-alt": semantics.text.alt,
-  "--color-text-action": semantics.text.action.default,
-  "--color-text-action-hover": semantics.text.action.hover,
-  "--color-text-action-inverse": semantics.text.action.inverse,
-  "--color-text-error": semantics.text.error,
-  "--color-border-default": semantics.border.default,
-  "--color-border-action": semantics.border.action.default,
-  "--color-border-action-inverse": semantics.border.action.inverse,
-  "--color-border-input": semantics.border.input.default,
-  "--color-border-input-hover": semantics.border.input.hover,
-  "--color-icon-primary": semantics.icon.primary,
-  "--color-icon-secondary": semantics.icon.secondary,
+  "--color-bg-surface": "#ffffff",
+  "--color-bg-surface-secondary": "#fffdf7",
+  "--color-bg-container-brand": "#ffd54d",
+  "--color-bg-action-primary": "#a43260",
+  "--color-bg-action-primary-hover": "#80254a",
+  "--color-bg-action-primary-disabled": "#b55173",
+  "--color-bg-action-secondary-selected": "#f4c3c8",
+  "--color-text-primary": "#522a10",
+  "--color-text-alt": "#ffffff",
+  "--color-text-action": "#a43260",
+  "--color-text-action-hover": "#80254a",
+  "--color-text-action-inverse": "#ffffff",
+  "--color-text-error": "#99110c",
+  "--color-border-default": "#e9e8e6",
+  "--color-border-action": "#a43260",
+  "--color-border-action-inverse": "#f4c3c8",
+  "--color-border-input": "#c9beb9",
+  "--color-border-input-hover": "#522a10",
+  "--color-icon-primary": "#522a10",
+  "--color-icon-secondary": "#ffd54d",
 };
 Object.entries(cssVars).forEach(([k, v]) =>
   document.documentElement.style.setProperty(k, v)
