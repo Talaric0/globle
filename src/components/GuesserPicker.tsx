@@ -13,6 +13,7 @@ export default function GuesserPicker({ guessCount }: Props) {
   const [saved, setSaved] = useState(false);
   const [alreadySaved, setAlreadySaved] = useState(false);
   const [savedGuesser, setSavedGuesser] = useState("");
+  const [savedGuessCount, setSavedGuessCount] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,12 +21,13 @@ export default function GuesserPicker({ guessCount }: Props) {
     async function checkExisting() {
       const { data } = await supabase
         .from("game_results")
-        .select("correct_guesser")
+        .select("correct_guesser, num_guesses")
         .eq("date", today)
         .single();
       if (data) {
         setAlreadySaved(true);
         setSavedGuesser(data.correct_guesser);
+        setSavedGuessCount(data.num_guesses);
       }
     }
     checkExisting();
@@ -58,14 +60,24 @@ export default function GuesserPicker({ guessCount }: Props) {
   return (
     <div className="my-4 text-center">
       {alreadySaved ? (
-        <p className="text-bnb-text font-medium">
-          Today's result saved — <strong>{savedGuesser}</strong> guessed
-          correctly!
-        </p>
+        <>
+          <p className="text-bnb-text font-medium">
+            Today's result saved — <strong>{savedGuesser}</strong> guessed
+            correctly!
+          </p>
+          <p className="text-bnb-text text-sm mt-1">
+            Guessed in <strong>{savedGuessCount}</strong>
+          </p>
+        </>
       ) : saved ? (
-        <p className="text-green-700 font-bold">
-          Saved! {savedGuesser} guessed correctly.
-        </p>
+        <>
+          <p className="text-green-700 font-bold">
+            Saved! {savedGuesser} guessed correctly.
+          </p>
+          <p className="text-bnb-text text-sm mt-1">
+            Guessed in <strong>{guessCount}</strong>
+          </p>
+        </>
       ) : (
         <>
           <p className="text-bnb-text font-medium mb-3">
